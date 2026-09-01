@@ -17,6 +17,8 @@ services:
         # Only set NEXT_PUBLIC_API_URL if the *browser* must call the backend
         # directly at a different origin than this app -- see README.
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+        # URL of the EXIM Search hub, used by the "back to hub" header link.
+        NEXT_PUBLIC_HUB_URL: ${NEXT_PUBLIC_HUB_URL:-/}
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:

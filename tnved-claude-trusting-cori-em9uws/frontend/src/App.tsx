@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import { getByCode, searchByName } from "./api";
 import type { TnvedRecord, SearchResult } from "./types";
 
+const HUB_URL = import.meta.env.VITE_HUB_URL || "/";
+
 function App() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,12 @@ function App() {
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
+          <a
+            href={HUB_URL}
+            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 transition-colors mb-6"
+          >
+            ← EXIM Search
+          </a>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">ТН ВЭД</h1>
           <p className="text-gray-500">Поиск по товарной номенклатуре</p>
         </div>

@@ -19,6 +19,12 @@ ENV BACKEND_INTERNAL_URL=${BACKEND_INTERNAL_URL}
 # origin than this app -- see README.
 ARG NEXT_PUBLIC_API_URL=
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# URL of the EXIM Search hub, used by the "back to hub" link in the header.
+# Defaults to "/" (a single-domain, path-based reverse proxy); set it to the
+# hub's own origin (e.g. https://exim.example.com) for a subdomain-per-app
+# deployment.
+ARG NEXT_PUBLIC_HUB_URL=/
+ENV NEXT_PUBLIC_HUB_URL=${NEXT_PUBLIC_HUB_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
