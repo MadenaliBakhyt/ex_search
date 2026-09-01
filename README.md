@@ -36,9 +36,13 @@ cd 3dcargo-claude-cargo-loading-planner-gdm4j7
 BACKEND_PORT=8001 FRONTEND_PORT=3001 NEXT_PUBLIC_HUB_URL=http://localhost:8080 \
   docker compose up --build -d
 
-# ТН ВЭД Search
+# ТН ВЭД Search — pointed at an existing PostgreSQL with the schema/data
+# already loaded (see tnved-claude-trusting-cori-em9uws/README.md for the
+# host-side Postgres config this needs). Add --profile local-db instead
+# of DATABASE_URL if you want a fresh, empty bundled database.
 cd ../tnved-claude-trusting-cori-em9uws
-BACKEND_PORT=8003 FRONTEND_PORT=3003 DB_PORT=5433 VITE_HUB_URL=http://localhost:8080 \
+BACKEND_PORT=8003 FRONTEND_PORT=3003 VITE_HUB_URL=http://localhost:8080 \
+  DATABASE_URL=postgresql+asyncpg://<user>:<password>@host.docker.internal:5432/<db> \
   docker compose up --build -d
 
 # Company Finder (no compose file — plain uvicorn)

@@ -5,13 +5,73 @@
 ## Запуск через Docker
 
 ```bash
-docker compose up -d
+docker compose --profile local-db up -d
 ```
+
+Флаг `--profile local-db` поднимает и собственный контейнер PostgreSQL
+(данные пустые, миграции нужно применить и импортировать `tnved.xlsx`
+самостоятельно — см. ниже). Если у вас уже есть готовая база с данными,
+контейнер БД не нужен вообще — см. следующий раздел.
 
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - Swagger: http://localhost:8000/docs
 - PostgreSQL: localhost:5432
+
+## Подключение к существующей базе данных
+
+Если PostgreSQL с таблицами и данными ТН ВЭД уже есть — не поднимайте
+контейнер `db` (профиль `local-db` просто не указывается), а вместо этого
+задайте `DATABASE_URL`, указывающий на вашу базу:
+
+```bash
+docker compose up -d
+```
+
+(без `--profile local-db` сервис `db` из compose-файла не запускается.)
+
+### База уже работает на этом же сервере (не в Docker)
+
+Контейнер `backend` умеет достучаться до Postgres на хосте через
+`host.docker.internal` (это уже настроено в `docker-compose.yml` через
+`extra_hosts`). Нужно:
+
+1. Разрешить PostgreSQL слушать не только `localhost`. В `postgresql.conf`
+   (путь узнать так: `sudo -u postgres psql -c "SHOW config_file;"`):
+   ```
+   listen_addresses = '*'
+   ```
+2. Разрешить подключения из docker-сети в `pg_hba.conf` (путь — `SHOW hba_file;`):
+   ```
+   host    tnved    <ваш_пользователь>    172.17.0.0/16    scram-sha-256
+   ```
+   (`172.17.0.0/16` — стандартная docker bridge-сеть; если у вас другая,
+   проверьте `docker network inspect bridge --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'`).
+3. Перезапустить PostgreSQL: `sudo systemctl restart postgresql`.
+4. Если стоит `ufw` — разрешить доступ к 5432 из docker-сети:
+   `sudo ufw allow from 172.17.0.0/16 to any port 5432`.
+5. Запустить стек с нужным `DATABASE_URL`:
+   ```bash
+   DATABASE_URL=postgresql+asyncpg://<пользователь>:<пароль>@host.docker.internal:5432/<база> \
+     docker compose up --build -d
+   ```
+
+Либо создайте `.env` рядом с `docker-compose.yml` с той же переменной —
+тогда просто `docker compose up -d` подхватит её без явного экспорта.
+
+### База в другом контейнере или на удалённом хосте
+
+Просто укажите `DATABASE_URL` с адресом, который реально доступен из сети,
+в которой работает `backend` (для отдельного Docker-контейнера — либо общий
+`docker network`, либо адрес хоста и проброшенный порт; для удалённой БД —
+её публичный/внутренний адрес). `host.docker.internal` в этих случаях не
+нужен, `extra_hosts` в compose-файле ему не мешает.
+
+### Проверка
+
+```bash
+curl http://localhost:8000/api/code/0101210000   # должен вернуть реальную запись
+```
 
 ## Импорт данных из Excel
 

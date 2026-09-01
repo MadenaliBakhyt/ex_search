@@ -1,6 +1,12 @@
 services:
+  # Bundled Postgres for a fresh, no-setup-required stack. Not started by
+  # default -- only with `docker compose --profile local-db up`. If you
+  # already have a Postgres with the tnved schema/data (on this host or
+  # elsewhere), skip this and set DATABASE_URL to point at it instead; see
+  # README.md ("Connecting to an existing PostgreSQL database").
   db:
     image: postgres:16-alpine
+    profiles: ["local-db"]
     environment:
       POSTGRES_DB: tnved
       POSTGRES_USER: postgres
@@ -18,12 +24,16 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/tnved
+      # Defaults to the bundled `db` service above. Override in .env (or
+      # inline) to point at an existing database instead -- e.g. one already
+      # running on this host: postgresql+asyncpg://USER:PASSWORD@host.docker.internal:5432/DBNAME
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://postgres:postgres@db:5432/tnved}
+    extra_hosts:
+      # Lets the container reach a Postgres running directly on this host via
+      # "host.docker.internal", on Linux too (Docker >= 20.10).
+      - "host.docker.internal:host-gateway"
     ports:
       - "${BACKEND_PORT:-8000}:8000"
-    depends_on:
-      db:
-        condition: service_healthy
 
   frontend:
     build:
