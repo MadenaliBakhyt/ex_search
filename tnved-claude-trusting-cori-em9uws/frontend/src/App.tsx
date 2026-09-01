@@ -2,7 +2,13 @@ import { useState, type FormEvent } from "react";
 import { getByCode, searchByName } from "./api";
 import type { TnvedRecord, SearchResult } from "./types";
 
-const HUB_URL = import.meta.env.VITE_HUB_URL || "/";
+// By default, points at the same host this page was opened from, on the
+// standard EXIM Search port (8080) -- so it works whether opened via
+// localhost, the server's IP, or a domain. Override with VITE_HUB_URL at
+// build time if EXIM Search lives on a different host/port.
+const HUB_URL =
+  import.meta.env.VITE_HUB_URL ||
+  `${window.location.protocol}//${window.location.hostname}:8080`;
 
 function App() {
   const [query, setQuery] = useState("");

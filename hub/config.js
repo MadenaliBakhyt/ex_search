@@ -1,13 +1,19 @@
-// EXIM Search hub — link configuration.
+// Ссылки EXIM Search — куда ведут карточки на главной странице.
 //
-// Edit the URLs below to point at wherever each project is actually deployed
-// (a subdomain, a path behind a reverse proxy, or a plain host:port for local
-// testing). This file is loaded separately from index.html on purpose: in
-// Docker you can bind-mount your own copy over this one to change the links
-// without rebuilding the hub image.
-window.EXIM_LINKS = {
-  cargo: "http://localhost:3001",
-  nums: "http://localhost:3002",
-  tnved: "http://localhost:3003",
-};
-
+// По умолчанию используется тот же хост, с которого открыта эта страница
+// (window.location.hostname), с портами, на которых по умолчанию запущены
+// три инструмента (3001 / 3002 / 3003) — так ссылки работают одинаково и на
+// localhost, и по IP сервера, и по домену, без правки файла под конкретный
+// адрес.
+//
+// Если какой-то инструмент развёрнут на своём домене/поддомене — впишите
+// сюда полный URL вместо вычисляемого. В Docker этот файл можно подменить
+// bind-mount'ом, не пересобирая образ.
+(function () {
+  var origin = window.location.protocol + "//" + window.location.hostname;
+  window.EXIM_LINKS = {
+    cargo: origin + ":3001",
+    nums: origin + ":3002",
+    tnved: origin + ":3003",
+  };
+})();

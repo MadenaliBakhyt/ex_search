@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowLeft, Package } from "lucide-react";
 
 import { DemoButton } from "@/components/DemoButton";
@@ -7,14 +8,27 @@ import { ExportMenu } from "@/components/export/ExportMenu";
 import { ProjectControls } from "@/components/export/ProjectControls";
 import { ProjectNameInput } from "@/components/layout/ProjectNameInput";
 
-const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || "/";
+// Build-time override, if set. Otherwise resolved on the client (after
+// mount, to avoid an SSR/client markup mismatch) to the same host this page
+// was opened from, on the standard EXIM Search port -- so it works whether
+// opened via localhost, the server's IP, or a domain.
+function useHubUrl() {
+  const [hubUrl, setHubUrl] = useState(process.env.NEXT_PUBLIC_HUB_URL || "/");
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_HUB_URL) {
+      setHubUrl(`${window.location.protocol}//${window.location.hostname}:8080`);
+    }
+  }, []);
+  return hubUrl;
+}
 
 export function Header() {
+  const hubUrl = useHubUrl();
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4">
       <div className="flex items-center gap-2">
         <a
-          href={HUB_URL}
+          href={hubUrl}
           className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           title="Back to EXIM Search"
         >

@@ -109,7 +109,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
         margin-bottom: 4px;
       }
       .card h2 {
@@ -149,33 +151,33 @@
 
     <div class="hero">
       <h1>EXIM <span>Search</span></h1>
-      <p>One place for the export/import tools your team uses — pick a project to get started.</p>
+      <p>Единое пространство для инструментов внешнеэкономической деятельности — выберите нужный раздел.</p>
     </div>
 
     <div class="grid" id="grid"></div>
 
-    <footer>EXIM Search hub</footer>
+    <footer>EXIM Search</footer>
 
     <script src="config.js"></script>
     <script>
       const PROJECTS = [
         {
           key: "cargo",
-          icon: "🚛",
-          title: "Cargo Loading Planner",
-          desc: "3D bin-packing for trucks and containers: pick a vehicle, describe the cargo, get a loading plan with 3D/2D views and PDF/CSV export.",
+          mark: "3D",
+          title: "Планировщик загрузки",
+          desc: "3D-размещение груза в фурах и контейнерах: выберите транспорт, опишите груз и получите схему загрузки с 3D/2D-видами и экспортом в PDF/CSV.",
         },
         {
           key: "nums",
-          icon: "🏢",
-          title: "Company Finder",
-          desc: "Look up a company's official website and phone number by name, one at a time or in bulk from an Excel file.",
+          mark: "ПК",
+          title: "Поиск компаний",
+          desc: "Поиск официального сайта и телефона компании по названию — по одной или массово из файла Excel.",
         },
         {
           key: "tnved",
-          icon: "📦",
-          title: "ТН ВЭД Search",
-          desc: "Look up customs (HS) codes by code or by product name, with tariffs and the documents required for each.",
+          mark: "ТН",
+          title: "Поиск ТН ВЭД",
+          desc: "Поиск по коду ТН ВЭД или по наименованию товара — тариф и список необходимых документов.",
         },
       ];
 
@@ -186,7 +188,7 @@
         const href = links[p.key] || "#";
         return `
           <a class="card" href="${href}">
-            <div class="icon">${p.icon}</div>
+            <div class="icon">${p.mark}</div>
             <h2>${p.title}</h2>
             <p>${p.desc}</p>
             <span class="go">Открыть →</span>
